@@ -1,46 +1,26 @@
+// add new methods saveToMongo and saveToFile and to add we end up changing our save to db class
+//violates open-close principle
+
+//sol: create save to db as abstract class and override the save fn in other class making it open to expansion
+
+/*
+     NOTE: 
+     persistence = abstract class
+     mongoPersistence = inherited for mongo
+     mysqlPersistence = inherited for mysql
+     filePersistence = inherited for file
+
+*/
+
 #include <iostream>
 #include<vector>
 #include <string>
 using namespace std;
 
-//A class should do only one thing — it should have one responsibility or one job.
-
-
-/*   1. Product class
-
-     Responsibility: Represents a product (with name and price).
-
-     SRP Role: Only holds product data — no unrelated logic.
-
-     2. ShoppingCart class
-
-     Responsibility: Manages a collection of Products.
-
-     Methods:
-
-     addProduct() → adds a product to the cart.
-
-     getProduct() → returns the list of products (read-only).
-
-     calcTotalPrice() → calculates total cost of products.
-
-     SRP Role: Handles only cart operations (not display/printing).
-
-     3. ShoppingCartPrinter class
-
-     Responsibility: Prints the cart’s contents (invoice).
-
-     Uses the ShoppingCart object to access products.
-
-     SRP Role: Handles only presentation/printing logic.
-
-*/
-
-
 class Product{
 public:
      double price;
-     std::string name;
+     string name;
 
      Product(string name, double price){
           this->name=name;
@@ -87,19 +67,32 @@ public:
      }
 };
 
-class ShoppingCartStorage{
-private:
-     ShoppingCart * cart;
-
+class Persistence{  //abstract class with virtual fn
 public:
-     ShoppingCartStorage(ShoppingCart * cart){
-          this->cart=cart;
-     }
 
-     void saveToDb(){
-          cout<< "saved sucessfully to Mysql Db";
+     virtual void save(ShoppingCart * cart)=0;
+};
+
+class MongoPersistence: public Persistence { //inherited class with function override
+public:
+     void save(ShoppingCart * cart) override{
+          cout<<"Saved to Mongo db "<<endl;
      }
 };
+class MysqlPersistence: public Persistence {
+public:
+     void save(ShoppingCart * cart) override{
+          cout<<"Saved to Mysql "<<endl;
+     }
+};
+class FilePersistence: public Persistence {
+public:
+     void save(ShoppingCart * cart) override{
+          cout<<"Saved to File "<<endl;
+     }
+};
+
+
 
 int main(){
      ShoppingCart * sc=new ShoppingCart(); 
@@ -111,4 +104,7 @@ int main(){
 
      ShoppingCartPrinter *cart= new ShoppingCartPrinter(sc);
      cart->printInvoice();
+
+     Persistence * mongoObject = new MongoPersistence();
+     mongoObject->save(sc);
 }
