@@ -105,6 +105,12 @@ int main(){
      ShoppingCartPrinter *cart= new ShoppingCartPrinter(sc);
      cart->printInvoice();
 
-     Persistence * mongoObject = new MongoPersistence();
+     MongoPersistence * mongoObject = new MongoPersistence();
      mongoObject->save(sc);
+
+     MysqlPersistence * mysqlObject = new MysqlPersistence();
+     mysqlObject->save(sc);
+
+     FilePersistence * fileObject = new FilePersistence();
+     fileObject->save(sc);
 }
